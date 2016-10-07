@@ -11,6 +11,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+
 //ROUTES
 
 app.get('/cards', (req, res) => {
@@ -19,6 +20,18 @@ app.get('/cards', (req, res) => {
     res.send(cards);
   })
 });
+
+app.get('/cards/category/:category', (req,res) => {
+  let categories = req.params.category.split('&');
+  console.log('query: ',req.query);
+  Card.filterCategory(categories, (err,randomQuestion) => {
+    if (err) return res.status(400).send(err);   
+    res.send(randomQuestion.question);
+
+  });
+  // console.log('category: ', categories )
+})
+
 
 
 app.post('/cards', (req,res) => {
@@ -45,7 +58,7 @@ app.put('/cards/:id', (req,res) => {
     if(err) return res.status(400).send(err);
   })
   res.send('updated cards')
-}) // end of app.put
+})
 
 
 app.listen(PORT, err => {

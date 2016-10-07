@@ -1,6 +1,7 @@
 const fs =require('fs');
 const path = require('path');
 const uuid = require('uuid');
+const _  = require('lodash');
 
 const filename = path.join(__dirname, '../data/cards.json');
 
@@ -35,7 +36,6 @@ exports.create = function(newItem, cb) {
 
 exports.delete = function(deleteItem, cb){
   exports.getAll((err, cards) => {
-    if (err) return res.status(400).send(err);
     let newCards = cards.filter(card => {
       if (card.id !== deleteItem) {
         return card;
@@ -47,17 +47,36 @@ exports.delete = function(deleteItem, cb){
 
 
 exports.update = function(cardId, updateCard, cb) {
-exports.getAll((err, cards) => {
-  if(err) return res.status(400).send(err);
-  let updatedCards = cards.map(card => {
-    if(card.id === cardId) {
+  exports.getAll((err, cards) => {
+    let updatedCards = cards.map(card => {
+      if(card.id === cardId) {
         card = updateCard;
         card.id = cardId;
-    }
-    return card;
+      }
+      return card;
+    })
+    exports.write(updatedCards, cb);
   })
-  exports.write(updatedCards, cb);
-})
+}
+
+exports.filterCategory = function(categories, cb) {
+  exports.getAll((err, cards)  => {
+    if(err) return cb(err);
+
+    let filteredCategories = [];
+       cards.forEach(card => {
+        categories.forEach( category => {
+          if(card.category === category) {
+              filteredCategories.push(card);
+          }
+        }) //end of categories map
+      })//end of filteredcategories map
+      
+      filteredCategories = _.shuffle(filteredCategories);
+      let randomQuestion = filteredCategories[0];
+
+      cb(null, randomQuestion);
+  })// end of getALl
 }
 
 

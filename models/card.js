@@ -59,10 +59,11 @@ exports.update = function(cardId, updateCard, cb) {
   })
 }
 
-exports.filterCategory = function(categories, cb) {
+exports.filterCategory = function(req, cb) {
   exports.getAll((err, cards)  => {
     if(err) return cb(err);
-
+    let categories = req.params.category.split('&');
+    let answer = req.query; 
     let filteredCategories = [];
        cards.forEach(card => {
         categories.forEach( category => {
@@ -71,16 +72,29 @@ exports.filterCategory = function(categories, cb) {
           }
         }) //end of categories map
       })//end of filteredcategories map
-      
+    
+
       filteredCategories = _.shuffle(filteredCategories);
       let randomQuestion = filteredCategories[0];
 
-      cb(null, randomQuestion);
+      
+      if (answer.answer === 'true') {
+        
+        cb(null, randomQuestion.answer)
+       
+      } else {
+          
+         cb(null, randomQuestion.question);
+      } 
+ 
   })// end of getALl
 }
 
 
 
+//card starts off showing no answer
+//second time that send is clicked, the answer will be added.
+//Then on to the next question and so on.
 
 
 

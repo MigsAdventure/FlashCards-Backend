@@ -21,12 +21,11 @@ app.get('/cards', (req, res) => {
   })
 });
 
-app.get('/cards/category/:category', (req,res) => {
-  let categories = req.params.category.split('&');
-  console.log('query: ',req.query);
-  Card.filterCategory(categories, (err,randomQuestion) => {
+app.get('/cards/category/:category?', (req,res) => {
+  
+  Card.filterCategory(req, (err,flashCard) => {
     if (err) return res.status(400).send(err);   
-    res.send(randomQuestion.question);
+    res.send(flashCard);
 
   });
   // console.log('category: ', categories )

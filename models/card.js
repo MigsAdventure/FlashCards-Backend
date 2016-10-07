@@ -32,3 +32,39 @@ exports.create = function(newItem, cb) {
     exports.write(items, cb);
   });
 }
+
+exports.delete = function(deleteItem, cb){
+  exports.getAll((err, cards) => {
+    if (err) return res.status(400).send(err);
+    let newCards = cards.filter(card => {
+      if (card.id !== deleteItem) {
+        return card;
+      }
+    })
+    exports.write(newCards, cb)
+  })
+}
+
+
+exports.update = function(cardId, updateCard, cb) {
+exports.getAll((err, cards) => {
+  if(err) return res.status(400).send(err);
+  let updatedCards = cards.map(card => {
+    if(card.id === cardId) {
+        card = updateCard;
+        card.id = cardId;
+    }
+    return card;
+  })
+  exports.write(updatedCards, cb);
+})
+}
+
+
+
+
+
+
+
+
+

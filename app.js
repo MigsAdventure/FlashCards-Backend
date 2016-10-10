@@ -3,7 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
-const Card = require('./models/Card');
+const Task = require('./models/Task');
 
 const app = express();
 
@@ -14,49 +14,53 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //ROUTES
 
-app.get('/cards', (req, res) => {
-  Card.getAll((err, cards) => {
-    if (err) return res.status(400).send(err);
-    res.send(cards);
-  })
-});
+// app.get('/todos', (req, res) => {
+//   Task.getAll((err, tasks) => {
+//     if (err) return res.status(400).send(err);
+//     res.send(tasks);
+//   })
+// });
 
-app.get('/cards/category/:category?', (req,res) => {
+app.get('/todos?', (req,res) => {
   
-  Card.filterCategory(req, (err,flashCard) => {
+  Task.filterIsComplete(req, (err,task) => {
     if (err) return res.status(400).send(err);   
-    res.send(flashCard);
+    res.send(task);
 
   });
   // console.log('category: ', categories )
 })
 
 
-
-app.post('/cards', (req,res) => {
-  Card.create(req.body, err => {
+app.post('/todos', (req,res) => {
+  Task.create(req.body, err => {
     if (err) return res.status(400).send(err);
-    res.send(`new card was added: \n ${JSON.stringify(req.body)}`);
+    res.send(`new task was added: \n ${JSON.stringify(req.body)}`);
   })
 });
 
 
-app.delete('/cards/:id', (req, res) => {
-  let deleteCard = req.params.id;
-  Card.delete(deleteCard,err => {
+app.delete('/todos/:id', (req, res) => {
+  Task.delete(req,err => {
   if(err) return res.status(400).send(err);
  });
- res.send('deleted card');
+ res.send('deleted task');
+}) 
+
+app.delete('/todos/complete', (req, res) => {
+  Task.delete(req, err => {
+  if(err) return res.status(400).send(err);
+ });
+ res.send('deleted task');
 }) 
 
 
-app.put('/cards/:id', (req,res) => {
-  let cardId = req.params.id;
-  let updateCard = req.body;
-  Card.update(cardId,updateCard, err => {
+app.put('/todos/:id', (req,res) => {
+  Task.update(req, (err, updatedTask) => {
     if(err) return res.status(400).send(err);
+    res.send(updatedTask)
   })
-  res.send('updated cards')
+  
 })
 
 
